@@ -61,14 +61,14 @@ __EOF__
     # WEBRUBY.run_bytecode
     f.puts <<__EOF__
   WEBRUBY.prototype.run_bytecode = function(bc) {
-    var stack = Runtime.stackSave();
-    var addr = Runtime.stackAlloc(bc.length);
+    var stack = stackSave();
+    var addr = stackAlloc(bc.length);
     var ret;
     writeArrayToMemory(bc, addr);
 
     ret = _webruby_internal_run_bytecode(this.mrb, addr, this.print_level);
 
-    Runtime.stackRestore(stack);
+    stackRestore(stack);
     return ret;
   };
 __EOF__
@@ -78,14 +78,11 @@ __EOF__
     # WEBRUBY.run_source
     f.puts <<__EOF__
   WEBRUBY.prototype.run_source = function(src) {
-    var stack = Runtime.stackSave();
-    var addr = Runtime.stackAlloc(src.length);
-    var ret;
-    writeStringToMemory(src, addr);
+    var stack = stackSave();
+    var addr = allocateUTF8OnStack(src);
+    var ret = _webruby_internal_run_source(this.mrb, addr, this.print_level);
 
-    ret = _webruby_internal_run_source(this.mrb, addr, this.print_level);
-
-    Runtime.stackRestore(stack);
+    stackRestore(stack);
     return ret;
   };
 __EOF__
